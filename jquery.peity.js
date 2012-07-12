@@ -162,6 +162,21 @@
       var values = $this.text().split(opts.delimiter)
       var max = Math.max.apply(Math, values.concat([opts.max]));
       var min = Math.min.apply(Math, values.concat([opts.min]))
+      var colours = []
+
+      if ("colours" in opts) {
+        var optsColours = opts.colours
+
+        if ($.isFunction(optsColours)) {
+          for (var i = 0, l = values.length; i < l; i++) {
+            colours.push(optsColours(values[i], i, values))
+          }
+        } else {
+          colours = optsColours
+        }
+      } else {
+        colours = [opts.colour]
+      }
 
       var canvas = createCanvas(opts.width, opts.height)
       var context = canvas.getContext("2d");
@@ -172,12 +187,11 @@
       var space = devicePixelRatio / 2
       var xQuotient = (width + space) / values.length
 
-      context.fillStyle = opts.colour;
-
       for (var i = 0; i < values.length; i++) {
         var x = i * xQuotient
         var y = height - (yQuotient * (values[i] - min))
 
+        context.fillStyle = colours[i % colours.length]
         context.fillRect(x, y, xQuotient - space, yQuotient * values[i])
       }
 
